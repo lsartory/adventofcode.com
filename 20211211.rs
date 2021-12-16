@@ -47,7 +47,7 @@ fn part_1(input: &Vec<Vec<Option<u32>>>) {
                     if let Some(a) = map[y][x] {
                         map[y][x] = Some(a + 1);
                         if a == 9 {
-                            *flash_count += 1; 
+                            *flash_count += 1;
                             let neighbors = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), (x - 1, y), (x + 1, y), (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)];
                             for n in neighbors {
                                 iterate(map, n.0, n.1, flash_count);
