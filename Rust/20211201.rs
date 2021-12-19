@@ -15,11 +15,11 @@ fn read_input(filename: &str) -> Result<Vec<i32>> {
 
 /***********************************************/
 
-fn part_1(input: &Vec<i32>) {
+fn part_1(input: &[i32]) {
     println!("Part 1: {}", input.windows(2).filter(|x| x[0] < x[1]).count());
 }
 
-fn part_2(input: &Vec<i32>) {
+fn part_2(input: &[i32]) {
     //println!("Part 2: {}", input.windows(3).map(|x| x.iter().sum::<i32>()).collect::<Vec<i32>>().windows(2).filter(|x| x[0] < x[1]).count());
     println!("Part 2: {}", input.windows(4).filter(|x| x[0] < x[3]).count());
 }

@@ -16,7 +16,7 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 /***********************************************/
 
 fn parse_input(input: Vec<String>) -> (Vec<u32>, Vec<(Vec<Vec<(u32, bool)>>, bool)>) {
-    let numbers : Vec<u32> = (match input.first() { Some(x) => x, _ => "" }).split(',').collect::<Vec<&str>>().iter().map(|x| match x.trim().parse() { Ok(x) => x, _ => 0 }).collect();
+    let numbers : Vec<_> = (input.first().unwrap_or(&"".to_string())).split(',').filter_map(|x| x.trim().parse().ok()).collect();
     let mut boards = Vec::new();
     let mut board = Vec::new();
     for line in input.iter().skip(1) {
@@ -27,7 +27,7 @@ fn parse_input(input: Vec<String>) -> (Vec<u32>, Vec<(Vec<Vec<(u32, bool)>>, boo
             }
             continue;
         }
-        let row : Vec<(u32, bool)> = line.split(' ').filter(|&x| !x.is_empty()).collect::<Vec<&str>>().iter().map(|x| match x.trim().parse() { Ok(x) => (x, false), _ => (0, false) }).collect();
+        let row : Vec<_> = line.split(' ').filter(|&x| !x.is_empty()).map(|x| (x.trim().parse().unwrap_or(0), false)).collect();
         board.push(row);
     }
     if !board.is_empty() {
@@ -38,7 +38,7 @@ fn parse_input(input: Vec<String>) -> (Vec<u32>, Vec<(Vec<Vec<(u32, bool)>>, boo
 
 /***********************************************/
 
-fn transpose<T: Clone>(v: &Vec<Vec<T>>) -> Vec<Vec<T>> {
+fn transpose<T: Clone>(v: &[Vec<T>]) -> Vec<Vec<T>> {
     (0..v[0].len()).map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>()).collect()
 }
 

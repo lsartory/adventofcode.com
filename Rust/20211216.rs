@@ -16,32 +16,30 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 /***********************************************/
 
 fn parse_input(input: Vec<String>) -> Vec<bool> {
-    input.first().unwrap_or(&String::new()).chars().map(|c| format!("{:04b}", c.to_digit(16).unwrap_or(0))).collect::<String>().chars().map(|c| c == '1').collect::<Vec<bool>>()
+    input.first().unwrap_or(&String::new()).chars().map(|c| format!("{:04b}", c.to_digit(16).unwrap_or(0))).collect::<String>().chars().map(|c| c == '1').collect()
 }
 
 /***********************************************/
 
-fn part_1(input: &Vec<bool>) {
+fn part_1(input: &[bool]) {
     let mut ptr = 0;
     let mut sum = 0;
 
-    fn decode_packet(input: &Vec<bool>, ptr: &mut usize, sum: &mut usize) -> usize {
+    fn decode_packet(input: &[bool], ptr: &mut usize, sum: &mut usize) -> usize {
         let ptr_start = *ptr;
         let mut decode_value = |l: usize| { let val = (&input[*ptr .. *ptr + l]).iter().fold(0, |accum, x| (accum << 1) | if *x { 1 } else { 0 }); *ptr += l; val };
 
         *sum += decode_value(3);
         if decode_value(3) == 4 {
             while decode_value(5) >> 4 != 0 {}
+        } else if decode_value(1) == 0 {
+            let mut l = decode_value(15);
+            while l > 0 {
+                l -= decode_packet(input, ptr, sum);
+            }
         } else {
-            if decode_value(1) == 0 {
-                let mut l = decode_value(15);
-                while l > 0 {
-                    l -= decode_packet(input, ptr, sum);
-                }
-            } else {
-                for _ in 0 .. decode_value(11) {
-                    decode_packet(input, ptr, sum);
-                }
+            for _ in 0 .. decode_value(11) {
+                decode_packet(input, ptr, sum);
             }
         }
 
@@ -52,10 +50,10 @@ fn part_1(input: &Vec<bool>) {
     println!("Part 1: {}", sum);
 }
 
-fn part_2(input: &Vec<bool>) {
+fn part_2(input: &[bool]) {
     let mut ptr = 0;
 
-    fn decode_packet(input: &Vec<bool>, ptr: &mut usize) -> (usize, usize) {
+    fn decode_packet(input: &[bool], ptr: &mut usize) -> (usize, usize) {
         let mut ret = 0;
         let ptr_start = *ptr;
         let mut decode_value = |l: usize| { let val = (&input[*ptr .. *ptr + l]).iter().fold(0, |accum, x| (accum << 1) | if *x { 1 } else { 0 }); *ptr += l; val };

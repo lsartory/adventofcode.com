@@ -18,12 +18,12 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 fn parse_input(input: Vec<String>) -> Vec<Vec<u32>> {
     let mut map = Vec::new();
     for line in input {
-        let mut row: Vec<u32> = line.split("").filter(|&x| !x.is_empty()).collect::<Vec<&str>>().iter().map(|x| match x.trim().parse() { Ok(x) => x, _ => 0 }).collect();
+        let mut row: Vec<_> = line.split("").filter(|&x| !x.is_empty()).collect::<Vec<_>>().iter().filter_map(|x| x.trim().parse().ok()).collect();
         row.insert(0, 9);
         row.push(9);
         map.push(row);
     }
-    if map.len() > 0 {
+    if !map.is_empty() {
         let width = map[0].len();
         map.insert(0, vec![9; width]);
         map.push(vec![9; width]);
@@ -37,13 +37,13 @@ fn transpose<T: Clone>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {
     (0..v[0].len()).map(|i| v.iter().map(|inner| inner[i].clone()).collect::<Vec<T>>()).collect()
 }
 
-fn part_1(input: &Vec<Vec<u32>>) {
+fn part_1(input: &[Vec<u32>]) {
     let mut min = Vec::new();
     for i in input.windows(3) {
         for j in transpose(i.to_vec()).windows(3) {
             let group = j.concat();
             let center = group[group.len() / 2];
-            if center < group.iter().enumerate().map(|x| if x.0 & 1 != 0 { *x.1 } else { 9 }).fold(9, |accum, x| if accum < x { accum } else { x }) {
+            if center < group.iter().enumerate().map(|x| if x.0 & 1 != 0 { *x.1 } else { 9 }).fold(9, |accum, x| accum.min(x)) {
                 min.push(center);
             }
         }
@@ -51,14 +51,14 @@ fn part_1(input: &Vec<Vec<u32>>) {
     println!("Part 1: {}", min.iter().map(|x| x + 1).sum::<u32>());
 }
 
-fn part_2(input: &Vec<Vec<u32>>) {
-    let map_vec = input.clone();
+fn part_2(input: &[Vec<u32>]) {
+    let map_vec = input.to_owned();
     let height = map_vec.len();
     let width = if height != 0 { map_vec[0].len() } else { 0 };
     let map = map_vec.as_slice();
 
     let mut basin_num = 1;
-    let mut map_vec2 = input.clone();
+    let mut map_vec2 = input.to_owned();
     let map2 = map_vec2.as_mut_slice();
     for i in map2.iter_mut() {
         for j in i {
@@ -71,8 +71,8 @@ fn part_2(input: &Vec<Vec<u32>>) {
             if map[y][x] == 9 {
                 map2[y][x] = 0;
             } else {
-                let neighbors: Vec<u32> = [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)].iter().map(|n| map[n.1][n.0]).collect();
-                if map[y][x] < match neighbors.iter().min() { Some(x) => *x, _ => 9 } {
+                let neighbors: Vec<_> = [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)].iter().map(|n| map[n.1][n.0]).collect();
+                if map[y][x] < *neighbors.iter().min().unwrap_or(&9) {
                     fn iterate(map: &[Vec<u32>], map2: &mut [Vec<u32>], x: usize, y: usize, basin_num: u32) {
                         map2[y][x] = basin_num;
                         let neighbors = [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)];
@@ -94,7 +94,7 @@ fn part_2(input: &Vec<Vec<u32>>) {
         basins.push(map_vec2.iter().flat_map(|x| x.iter()).filter(|x| **x == i).count());
     }
     basins.sort_unstable();
-    println!("Part 2: {}", basins.iter().rev().take(3).fold(1, |accum, x| accum * x));
+    println!("Part 2: {}", basins.iter().rev().take(3).product::<usize>());
 }
 
 /***********************************************/

@@ -20,22 +20,24 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 fn parse_input(input: Vec<String>) -> Vec<((u32, u32), (u32, u32))> {
     let mut ret = Vec::new();
     for line in input {
-        let parts: Vec<u32> = line.split("->").map(|x| x.trim().split(',').map(|x| match x.trim().parse::<u32>() { Ok(x) => x, _ => 0 }).collect::<Vec<u32>>()).collect::<Vec<Vec<u32>>>().into_iter().flat_map(|x| x.into_iter()).collect();
-        ret.push(((parts[0], parts[1]), (parts[2], parts[3])));
+        let parts: Vec<_> = line.split("->").map(|x| x.trim().split(',').filter_map(|x| x.trim().parse::<u32>().ok()).collect::<Vec<_>>()).collect::<Vec<_>>().into_iter().flat_map(|x| x.into_iter()).collect();
+        if parts.len() >= 4 {
+            ret.push(((parts[0], parts[1]), (parts[2], parts[3])));
+        }
     }
     ret
 }
 
 /***********************************************/
 
-fn part_1(input: &Vec<((u32, u32), (u32, u32))>) {
+fn part_1(input: &[((u32, u32), (u32, u32))]) {
     let mut grid = [[0; GRID_ROWS]; GRID_COLS];
     for line in input {
         if line.0.0 == line.1.0 || line.0.1 == line.1.1 {
             let x_range = (if line.0.0 < line.1.0 { line.0.0 } else { line.1.0 }, if line.0.0 > line.1.0 { line.0.0 } else { line.1.0 });
             let y_range = (if line.0.1 < line.1.1 { line.0.1 } else { line.1.1 }, if line.0.1 > line.1.1 { line.0.1 } else { line.1.1 });
-            for x in x_range.0..=x_range.1 {
-                for y in y_range.0..=y_range.1 {
+            for x in x_range.0 ..= x_range.1 {
+                for y in y_range.0 ..= y_range.1 {
                     grid[y as usize][x as usize] += 1;
                 }
             }
@@ -45,7 +47,7 @@ fn part_1(input: &Vec<((u32, u32), (u32, u32))>) {
     println!("Part 1: {}", sum);
 }
 
-fn part_2(input: &Vec<((u32, u32), (u32, u32))>) {
+fn part_2(input: &[((u32, u32), (u32, u32))]) {
     let mut grid = [[0; GRID_ROWS]; GRID_COLS];
     for line in input {
         let mut x = line.0.0;

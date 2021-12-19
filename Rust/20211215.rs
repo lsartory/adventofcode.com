@@ -21,9 +21,9 @@ fn parse_input(input: Vec<String>) -> Vec<Vec<u32>> {
 
 /***********************************************/
 
-fn part_1(input: &Vec<Vec<u32>>) {
+fn part_1(input: &[Vec<u32>]) {
     let mut q = Vec::new();
-    let mut dist = input.clone();
+    let mut dist = input.to_owned();
     let dist_map = dist.as_mut_slice();
     let height = dist_map.len();
     let width = if height > 0 { dist_map[0].len() } else { 0 };
@@ -47,7 +47,7 @@ fn part_1(input: &Vec<Vec<u32>>) {
     println!("\rPart 1: {}", dist_map[height - 1][width - 1]);
 }
 
-fn part_2(input: &Vec<Vec<u32>>) {
+fn part_2(input: &[Vec<u32>]) {
     let mut height = input.len();
     let mut width = if height > 0 { input[0].len() } else { 0 };
     let mut new_map = Vec::new();

@@ -18,12 +18,12 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 fn parse_input(input: Vec<String>) -> Vec<Vec<Option<u32>>> {
     let mut map = Vec::new();
     for line in input {
-        let mut row: Vec<_> = line.split("").filter(|&x| !x.is_empty()).collect::<Vec<&str>>().iter().map(|x| match x.trim().parse() { Ok(x) => Some(x), _ => None }).collect();
+        let mut row: Vec<_> = line.split("").filter(|&x| !x.is_empty()).map(|x| x.trim().parse().ok()).collect();
         row.insert(0, None);
         row.push(None);
         map.push(row);
     }
-    if map.len() > 0 {
+    if !map.is_empty() {
         let width = map[0].len();
         map.insert(0, vec![None; width]);
         map.push(vec![None; width]);
@@ -33,8 +33,8 @@ fn parse_input(input: Vec<String>) -> Vec<Vec<Option<u32>>> {
 
 /***********************************************/
 
-fn part_1(input: &Vec<Vec<Option<u32>>>) {
-    let mut map_vec = input.clone();
+fn part_1(input: &[Vec<Option<u32>>]) {
+    let mut map_vec = input.to_owned();
     let height = map_vec.len();
     let width = if height != 0 { map_vec[0].len() } else { 0 };
     let map = map_vec.as_mut_slice();
@@ -72,8 +72,8 @@ fn part_1(input: &Vec<Vec<Option<u32>>>) {
     println!("Part 1: {}", flash_count);
 }
 
-fn part_2(input: &Vec<Vec<Option<u32>>>) {
-    let mut map_vec = input.clone();
+fn part_2(input: &[Vec<Option<u32>>]) {
+    let mut map_vec = input.to_owned();
     let height = map_vec.len();
     let width = if height != 0 { map_vec[0].len() } else { 0 };
     let map = map_vec.as_mut_slice();

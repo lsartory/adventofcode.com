@@ -49,10 +49,10 @@ fn part_1(input: &(String, Vec<(String, String)>)) {
         base = polymer.clone();
         polymer.clear();
     }
-    let mut elements: Vec<_> = base.clone().chars().collect();
+    let mut elements: Vec<_> = base.chars().collect();
     elements.sort_unstable();
     elements.dedup();
-    let occurences = elements.iter().map(|x| base.chars().filter(|y| y == x).count()).collect::<Vec<usize>>();
+    let occurences = elements.iter().map(|x| base.chars().filter(|y| y == x).count()).collect::<Vec<_>>();
     println!("Part 1: {}", occurences.iter().max().unwrap_or(&0) - occurences.iter().min().unwrap_or(&0));
 }
 

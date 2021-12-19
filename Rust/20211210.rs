@@ -15,7 +15,7 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 
 /***********************************************/
 
-fn part_1(input: &Vec<String>) {
+fn part_1(input: &[String]) {
     let mut score = 0;
     for line in input {
         let mut stack = Vec::new();
@@ -46,10 +46,10 @@ fn part_1(input: &Vec<String>) {
     println!("Part 1: {}", score);
 }
 
-fn part_2(input: &Vec<String>) {
+fn part_2(input: &[String]) {
     let mut scores = Vec::new();
     'outer: for line in input {
-        let mut stack: Vec<char> = Vec::new();
+        let mut stack = Vec::new();
         for c in line.chars() {
             match c {
                 '(' | '[' | '{' | '<' => { stack.push(c); },

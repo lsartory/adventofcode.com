@@ -16,15 +16,15 @@ fn read_input(filename: &str) -> Result<Vec<String>> {
 /***********************************************/
 
 fn parse_input(input: Vec<String>) -> Vec<u32> {
-    (match input.first() { Some(x) => x, _ => "" }).split(',').map(|x| match x.trim().parse::<u32>() { Ok(x) => x, _ => 0 }).collect()
+    (input.first().unwrap_or(&String::new())).split(',').filter_map(|x| x.trim().parse::<u32>().ok()).collect()
 }
 
 /***********************************************/
 
-fn part_1(input: &Vec<u32>) {
+fn part_1(input: &[u32]) {
     let duration = 80;
-    let mut fishes = input.clone();
-    for _i in 0..duration {
+    let mut fishes = input.to_owned();
+    for _ in 0 .. duration {
         let mut new = 0;
         for fish in fishes.iter_mut() {
             if *fish == 0 {
@@ -40,16 +40,16 @@ fn part_1(input: &Vec<u32>) {
     println!("Part 1: There are {} fishes after {} days", fishes.len(), duration);
 }
 
-fn part_2(input: &Vec<u32>) {
+fn part_2(input: &[u32]) {
     let duration = 256;
     let mut days = vec![0; 10];
     for i in input {
         days[*i as usize] += 1;
     }
-    for _i in 0..duration {
+    for _ in 0 .. duration {
         days[7] += days[0];
         days[9] += days[0];
-        for j in 1..days.len() {
+        for j in 1 .. days.len() {
             days[j - 1] = days[j];
         }
         days[9] = 0;

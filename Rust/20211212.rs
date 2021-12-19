@@ -78,7 +78,7 @@ fn part_2(input: &HashMap<u64, Vec<(u64, bool)>>) {
         if cave.1 {
             *visited.entry(cave.0).or_insert(0) += 1;
         }
-        let extra_visit = if !extra_allowed || match visited.iter().map(|x| *x.1).max() { Some(x) => x, _ => 0 } > 1 { 0 } else { 1 };
+        let extra_visit = if !extra_allowed || visited.iter().map(|x| *x.1).max().unwrap_or(0) > 1 { 0 } else { 1 };
         for next in &map[&cave.0] {
             if next.0 != start_cave && (!next.1 || *visited.entry(next.0).or_insert(0) < 1 + extra_visit) {
                 iterate(map, *next, start_cave, end_cave, visited.clone(), extra_visit != 0, total_paths);

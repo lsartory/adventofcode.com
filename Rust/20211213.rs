@@ -19,13 +19,13 @@ fn parse_input(input: Vec<String>) -> (Vec<(u32, u32)>, Vec<(char, u32)>) {
     let mut points = Vec::new();
     let mut folds = Vec::new();
     for line in input {
-        let coords = line.split(',').map(|x| match x.trim().parse::<u32>() { Ok(x) => x, _ => 0 }).collect::<Vec<u32>>();
+        let coords = line.split(',').filter_map(|x| x.trim().parse::<u32>().ok()).collect::<Vec<u32>>();
         if coords.len() > 1 {
             points.push((coords[0], coords[1]));
         }
         let instructions = line.split('=').map(|x| x.trim().to_string()).collect::<Vec<String>>();
         if instructions.len() > 1 {
-            folds.push((match instructions[0].chars().last() { Some(x) => x, _ => ' ' }, match instructions[1].parse() { Ok(x) => x, _ => 0}));
+            folds.push((instructions[0].chars().last().unwrap_or(' '), instructions[1].parse().unwrap_or(0)));
         }
     }
     (points, folds)
@@ -35,7 +35,7 @@ fn parse_input(input: Vec<String>) -> (Vec<(u32, u32)>, Vec<(char, u32)>) {
 
 fn part_1(input: &(Vec<(u32, u32)>, Vec<(char, u32)>)) {
     let mut grid = input.0.clone();
-    let fold = match input.1.first() { Some(x) => *x, _ => (' ', 0) };
+    let fold = input.1.first().unwrap_or(&(' ', 0));
     for i in grid.as_mut_slice() {
         if fold.0 == 'x' && i.0 > fold.1 {
             i.0 = fold.1 - (i.0 - fold.1);

@@ -28,11 +28,10 @@ fn parse_input(input: Vec<String>) -> Vec<Record> {
         for (i, part) in line.split(' ').map(|x| x.trim().to_string()).enumerate() {
             if i == 0 {
                 rec.direction = part;
-            } else {
-                match part.parse() {
-                    Ok(x) => { rec.amount = x; ret.push(rec); break; },
-                        _ => {}
-                }
+            } else if let Ok(x) = part.parse() {
+                rec.amount = x;
+                ret.push(rec);
+                break;
             }
         }
     }
@@ -41,7 +40,7 @@ fn parse_input(input: Vec<String>) -> Vec<Record> {
 
 /***********************************************/
 
-fn part_1(input: &Vec<Record>) {
+fn part_1(input: &[Record]) {
     let mut pos = (0, 0);
     for i in input {
         match i.direction.as_str() {
@@ -54,7 +53,7 @@ fn part_1(input: &Vec<Record>) {
     println!("Part 1: Horizontal position is {}, depth is {:6} → Product is {:10}", pos.0, pos.1, pos.0 * pos.1);
 }
 
-fn part_2(input: &Vec<Record>) {
+fn part_2(input: &[Record]) {
     let mut pos = (0, 0, 0);
     for i in input {
         match i.direction.as_str() {
