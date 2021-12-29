@@ -44,7 +44,7 @@ fn parse_input(input: Vec<String>) -> Vec<Operation> {
     for line in input {
         let parts = line.split(' ').map(|x| x.trim().to_string()).collect::<Vec<_>>();
         let get_register = |r: &String| {
-            match r.chars().nth(0) {
+            match r.chars().next() {
                 Some('w') => Some(Register::W),
                 Some('x') => Some(Register::X),
                 Some('y') => Some(Register::Y),
@@ -56,12 +56,12 @@ fn parse_input(input: Vec<String>) -> Vec<Operation> {
             if let Ok(i) = x.parse::<i64>() {
                 Some(Source::Imm(i))
             } else {
-                if let Some(r) = get_register(x) { Some(Source::Reg(r)) } else { None }
+                get_register(x).map(Source::Reg)
             }
         };
         let rhs = if parts.len() >= 3 { get_source(&parts[2]) } else { None };
         let lhs = if parts.len() >= 2 { get_register(&parts[1]) } else { None };
-        let op  = if parts.len() >= 1 {
+        let op  = if parts.len() >= 2 {
             match (parts[0].as_str(), lhs, rhs) {
                 ("inp", Some(lhs), None)      => { Some(Operation::Inp(lhs))      },
                 ("add", Some(lhs), Some(rhs)) => { Some(Operation::Add(lhs, rhs)) },
@@ -114,7 +114,7 @@ fn part_1(input: &[Operation]) {
                 Source::Reg(r) => read_reg(r)
             };
             let val = match op {
-                Operation::Inp(_)    => { rhs_val },
+                Operation::Inp(_)  => { rhs_val },
                 Operation::Add(..) => { lhs_val + rhs_val },
                 Operation::Mul(..) => { lhs_val * rhs_val },
                 Operation::Div(..) => { lhs_val / rhs_val },
@@ -133,15 +133,18 @@ fn part_1(input: &[Operation]) {
             break;
         }
 
-        break; // Obviously the brute force option is way too slow, so don't try it...
+        // Obviously the brute force option is way too slow, so don't try it...
+        if z > 10 {
+            break;
+        }
     }
 
     // Solution based on Kamiel de Visser's analysis
     // https://github.com/kemmel-dev/AdventOfCode2021/tree/master/day24
     let mut digit = [0; 14];
     let mut stack = Vec::new();
-    let check  = input.iter().filter_map(|x| if let Operation::Add(lhs, rhs) = x { if let Source::Imm(val) = rhs { (*lhs == Register::X).then(|| val) } else { None } } else { None }).collect::<Vec<_>>();
-    let offset = input.iter().filter_map(|x| if let Operation::Add(lhs, rhs) = x { if let Source::Imm(val) = rhs { (*lhs == Register::Y).then(|| val) } else { None } } else { None }).collect::<Vec<_>>().chunks(3).map(|x| x[2]).collect::<Vec<_>>();
+    let check  = input.iter().filter_map(|x| if let Operation::Add(lhs, Source::Imm(val)) = x { (*lhs == Register::X).then(|| val) } else { None }).collect::<Vec<_>>();
+    let offset = input.iter().filter_map(|x| if let Operation::Add(lhs, Source::Imm(val)) = x { (*lhs == Register::Y).then(|| val) } else { None }).collect::<Vec<_>>().chunks(3).map(|x| x[2]).collect::<Vec<_>>();
     for (i, p) in check.iter().zip(offset).enumerate() {
         if **p.0 > 0 {
             stack.push((i, p.1));
@@ -163,8 +166,8 @@ fn part_1(input: &[Operation]) {
 fn part_2(input: &[Operation]) {
     let mut digit = [0; 14];
     let mut stack = Vec::new();
-    let check  = input.iter().filter_map(|x| if let Operation::Add(lhs, rhs) = x { if let Source::Imm(val) = rhs { (*lhs == Register::X).then(|| val) } else { None } } else { None }).collect::<Vec<_>>();
-    let offset = input.iter().filter_map(|x| if let Operation::Add(lhs, rhs) = x { if let Source::Imm(val) = rhs { (*lhs == Register::Y).then(|| val) } else { None } } else { None }).collect::<Vec<_>>().chunks(3).map(|x| x[2]).collect::<Vec<_>>();
+    let check  = input.iter().filter_map(|x| if let Operation::Add(lhs, Source::Imm(val)) = x { (*lhs == Register::X).then(|| val) } else { None }).collect::<Vec<_>>();
+    let offset = input.iter().filter_map(|x| if let Operation::Add(lhs, Source::Imm(val)) = x { (*lhs == Register::Y).then(|| val) } else { None }).collect::<Vec<_>>().chunks(3).map(|x| x[2]).collect::<Vec<_>>();
     for (i, p) in check.iter().zip(offset).enumerate() {
         if **p.0 > 0 {
             stack.push((i, p.1));
